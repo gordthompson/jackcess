@@ -17,6 +17,8 @@ limitations under the License.
 package com.healthmarketscience.jackcess;
 
 import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -91,7 +93,7 @@ public class ComplexColumnTest extends TestCase
 
       ComplexValueForeignKey row8ValFk = (ComplexValueForeignKey)
         verCol.getRowValue(row8);
-      Date upTime = new Date();
+      LocalDateTime upTime = LocalDateTime.now();
       row8ValFk.addVersion("row8-memo", upTime);
       checkVersions(row8ValFk.get(), row8ValFk, "row8-memo",
                     "row8-memo", upTime);    
@@ -150,7 +152,7 @@ public class ComplexColumnTest extends TestCase
       db.close();
     }
   }
-
+  
   public void testAttachments() throws Exception
   {
     for(final TestDB testDB : TestDB.getSupportedForBasename(Basename.COMPLEX)) {
@@ -362,10 +364,14 @@ public class ComplexColumnTest extends TestCase
       assertEquals(curValue, versions.get(0).getValue());
       for(int i = 0; i < versionInfos.length; i+=2) {
         String value = (String)versionInfos[i];
-        Date modDate = (Date)versionInfos[i+1];
+        Object o = versionInfos[i+1];
+        LocalDateTime modDate = 
+            ((o instanceof LocalDateTime) ?
+                (LocalDateTime) o :
+                LocalDateTime.ofInstant(((Date) o).toInstant(), ZoneId.of("America/Toronto")));
         Version v = versions.get(i/2);
         assertEquals(value, v.getValue());
-        assertSameDate(modDate, v.getModifiedDate());
+        assertEquals(modDate, v.getModifiedDate());
       }
     }
   }

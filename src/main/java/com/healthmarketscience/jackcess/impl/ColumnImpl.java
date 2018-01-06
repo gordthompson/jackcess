@@ -32,6 +32,10 @@ import java.nio.charset.Charset;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -783,13 +787,13 @@ public class ColumnImpl implements Column, Comparable<ColumnImpl> {
   /**
    * Decodes a date value.
    */
-  private Date readDateValue(ByteBuffer buffer)
+  private LocalDateTime readDateValue(ByteBuffer buffer)
   {
     // seems access stores dates in the local timezone.  guess you just hope
     // you read it in the same timezone in which it was written!
     long dateBits = buffer.getLong();
-    long time = fromDateDouble(Double.longBitsToDouble(dateBits));
-    return new DateExt(time, dateBits);
+    long time = fromLocalDateDouble(Double.longBitsToDouble(dateBits));
+    return LocalDateTime.of(1970, 1, 1, 0, 0).plus(time, ChronoUnit.MILLIS);
   }
   
   /**
@@ -847,9 +851,14 @@ public class ColumnImpl implements Column, Comparable<ColumnImpl> {
   {
     // seems access stores dates in the local timezone.  guess you just
     // hope you read it in the same timezone in which it was written!
-    long time = toDateLong(value);
-    time += getToLocalTimeZoneOffset(time);
-    return toLocalDateDouble(time);
+    if (value instanceof LocalDateTime) {
+      return toLocalDateDouble(
+          Duration.between(LocalDateTime.of(1970, 1, 1, 0, 0), (Temporal) value).toMillis());
+    } else {
+      long time = toDateLong(value);
+      time += getToLocalTimeZoneOffset(time);
+      return toLocalDateDouble(time);
+    }
   }
 
   static double toLocalDateDouble(long time)
@@ -1534,6 +1543,22 @@ public class ColumnImpl implements Column, Comparable<ColumnImpl> {
   }
   
   /**
+   * @return an appropriate LocalDateTime representation of the given object.
+   */
+  private static LocalDateTime toLocalDateTime(Object value)
+  {
+    LocalDateTime rtn = null;
+    if(value != null) {
+      if(value instanceof LocalDateTime) {
+        rtn = (LocalDateTime) value;
+      } else {
+        rtn = LocalDateTime.of(1970, 1, 1, 0, 0).plus(((Date) value).getTime(), ChronoUnit.MILLIS);
+      }
+    }
+    return rtn;
+  }
+  
+  /**
    * Swaps the bytes of the given numeric in place.
    */
   private static void fixNumericByteOrder(byte[] bytes)
@@ -1793,8 +1818,7 @@ public class ColumnImpl implements Column, Comparable<ColumnImpl> {
       return ((value instanceof Double) ? value : 
               toNumber(value).doubleValue());
     case SHORT_DATE_TIME:
-      return ((value instanceof DateExt) ? value :
-              new Date(toDateLong(value)));
+      return toLocalDateTime(value);
     case TEXT:
     case MEMO:
     case GUID:

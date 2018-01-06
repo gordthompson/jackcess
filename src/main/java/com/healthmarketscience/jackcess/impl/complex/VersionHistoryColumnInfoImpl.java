@@ -17,8 +17,8 @@ limitations under the License.
 package com.healthmarketscience.jackcess.impl.complex;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import com.healthmarketscience.jackcess.Column;
@@ -133,7 +133,7 @@ public class VersionHistoryColumnInfoImpl extends ComplexColumnInfoImpl<Version>
                                 Row rawValue) {
     ComplexValue.Id id = getValueId(rawValue);
     String value = (String)getValueColumn().getRowValue(rawValue);
-    Date modifiedDate = (Date)getModifiedDateColumn().getRowValue(rawValue);
+    LocalDateTime modifiedDate = (LocalDateTime) getModifiedDateColumn().getRowValue(rawValue);
 
     return new VersionImpl(id, complexValueFk, value, modifiedDate);
   }
@@ -146,12 +146,12 @@ public class VersionHistoryColumnInfoImpl extends ComplexColumnInfoImpl<Version>
     return row;
   }
   
-  public static Version newVersion(String value, Date modifiedDate) {
+  public static Version newVersion(String value, LocalDateTime modifiedDate) {
     return newVersion(INVALID_FK, value, modifiedDate);
   }
   
   public static Version newVersion(ComplexValueForeignKey complexValueFk,
-                                   String value, Date modifiedDate) {
+                                   String value, LocalDateTime modifiedDate) {
     return new VersionImpl(INVALID_ID, complexValueFk, value, modifiedDate);
   }
 
@@ -159,10 +159,10 @@ public class VersionHistoryColumnInfoImpl extends ComplexColumnInfoImpl<Version>
   private static class VersionImpl extends ComplexValueImpl implements Version
   {
     private final String _value;
-    private final Date _modifiedDate;
+    private final LocalDateTime _modifiedDate;
 
     private VersionImpl(Id id, ComplexValueForeignKey complexValueFk,
-                        String value, Date modifiedDate)
+                        String value, LocalDateTime modifiedDate)
     {
       super(id, complexValueFk);
       _value = value;
@@ -173,13 +173,13 @@ public class VersionHistoryColumnInfoImpl extends ComplexColumnInfoImpl<Version>
       return _value;
     }
 
-    public Date getModifiedDate() {
+    public LocalDateTime getModifiedDate() {
       return _modifiedDate;
     }    
     
     public int compareTo(Version o) {
-      Date d1 = getModifiedDate();
-      Date d2 = o.getModifiedDate();
+      LocalDateTime d1 = getModifiedDate();
+      LocalDateTime d2 = o.getModifiedDate();
 
       // sort by descending date (newest/greatest first)
       int cmp = d2.compareTo(d1);

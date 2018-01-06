@@ -18,9 +18,10 @@ package com.healthmarketscience.jackcess.impl;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.TimeZone;
 import java.util.Date;
 import java.math.BigDecimal;
-
+import java.time.LocalDateTime;
 import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.complex.ComplexValueForeignKey;
 import com.healthmarketscience.jackcess.util.OleBlob;
@@ -91,7 +92,16 @@ public class RowImpl extends LinkedHashMap<String,Object> implements Row
   }
 
   public Date getDate(String name) {
-    return (Date)get(name);
+    return getDate(name, TimeZone.getDefault());
+  }
+  
+  public Date getDate(String name, TimeZone tz) {
+    Date rtn = null;
+    LocalDateTime ldt = (LocalDateTime) get(name);
+    if (ldt != null) {
+      rtn = Date.from(ldt.atZone(tz.toZoneId()).toInstant());
+    }
+    return rtn;
   }
 
   public byte[] getBytes(String name) {

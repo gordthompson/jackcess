@@ -17,7 +17,7 @@ limitations under the License.
 package com.healthmarketscience.jackcess.impl.complex;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -159,11 +159,11 @@ public class ComplexValueForeignKeyImpl extends ComplexValueForeignKey
   
   @Override
   public Version addVersion(String value) throws IOException {
-    return addVersion(value, new Date());
+    return addVersion(value, LocalDateTime.now());
   }
   
   @Override
-  public Version addVersion(String value, Date modifiedDate) throws IOException {
+  public Version addVersion(String value, LocalDateTime modifiedDate) throws IOException {
     reset();
     Version v = VersionHistoryColumnInfoImpl.newVersion(this, value, modifiedDate);
     getVersionInfo().addValue(v);
@@ -178,7 +178,7 @@ public class ComplexValueForeignKeyImpl extends ComplexValueForeignKey
   @Override
   public Attachment addAttachment(
       String url, String name, String type, byte[] data,
-      Date timeStamp, Integer flags)
+      LocalDateTime timeStamp, Integer flags)
     throws IOException
   {
     reset();
@@ -198,7 +198,7 @@ public class ComplexValueForeignKeyImpl extends ComplexValueForeignKey
   @Override
   public Attachment addEncodedAttachment(
       String url, String name, String type, byte[] encodedData,
-      Date timeStamp, Integer flags)
+      LocalDateTime timeStamp, Integer flags)
     throws IOException
   {
     reset();

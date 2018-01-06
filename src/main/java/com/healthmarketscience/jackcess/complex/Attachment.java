@@ -17,7 +17,7 @@ limitations under the License.
 package com.healthmarketscience.jackcess.complex;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Complex value corresponding to an attachment.
@@ -46,9 +46,9 @@ public interface Attachment extends ComplexValue
 
   public void setFileType(String fileType);
   
-  public Date getFileTimeStamp();
+  public LocalDateTime getFileTimeStamp();
 
-  public void setFileTimeStamp(Date fileTimeStamp);
+  public void setFileTimeStamp(LocalDateTime fileTimeStamp);
   
   public Integer getFileFlags();
 

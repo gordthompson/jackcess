@@ -19,6 +19,7 @@ package com.healthmarketscience.jackcess;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.TimeZone;
 import java.math.BigDecimal;
 
 import com.healthmarketscience.jackcess.complex.ComplexValueForeignKey;
@@ -89,9 +90,15 @@ public interface Row extends Map<String,Object>
 
   /**
    * Convenience method which gets the value for the row with the given name,
-   * casting it to a Date (DataType SHORT_DATE_TIME).
+   * casting it to a Date (DataType SHORT_DATE_TIME) in the default JVM time zone.
    */
   public Date getDate(String name);
+
+  /**
+   * Convenience method which gets the value for the row with the given name,
+   * casting it to a Date (DataType SHORT_DATE_TIME) in the specified time zone.
+   */
+  public Date getDate(String name, TimeZone tz);
 
   /**
    * Convenience method which gets the value for the row with the given name,

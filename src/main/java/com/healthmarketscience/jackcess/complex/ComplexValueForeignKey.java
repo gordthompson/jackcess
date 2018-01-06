@@ -18,7 +18,7 @@ package com.healthmarketscience.jackcess.complex;
 
 import java.io.IOException;
 import java.io.ObjectStreamException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import com.healthmarketscience.jackcess.Column;
@@ -122,7 +122,7 @@ public abstract class ComplexValueForeignKey extends Number
   public abstract Version addVersion(String value)
     throws IOException;
 
-  public abstract Version addVersion(String value, Date modifiedDate)
+  public abstract Version addVersion(String value, LocalDateTime modifiedDate)
     throws IOException;
 
   public abstract Attachment addAttachment(byte[] data)
@@ -130,7 +130,7 @@ public abstract class ComplexValueForeignKey extends Number
 
   public abstract Attachment addAttachment(
       String url, String name, String type, byte[] data,
-      Date timeStamp, Integer flags)
+      LocalDateTime timeStamp, Integer flags)
     throws IOException;
 
   public abstract Attachment addEncodedAttachment(byte[] encodedData)
@@ -138,7 +138,7 @@ public abstract class ComplexValueForeignKey extends Number
 
   public abstract Attachment addEncodedAttachment(
       String url, String name, String type, byte[] encodedData,
-      Date timeStamp, Integer flags)
+      LocalDateTime timeStamp, Integer flags)
     throws IOException;
 
   public abstract Attachment updateAttachment(Attachment attachment)

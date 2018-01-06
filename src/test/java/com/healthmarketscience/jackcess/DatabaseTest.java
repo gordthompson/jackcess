@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -194,7 +194,6 @@ public class DatabaseTest extends TestCase
       Map<String,Object> row2 = createTestRowMap("Tim2");
       Map<String,Object> row3 = createTestRowMap("Tim3");
       Table table = db.getTable("Test");
-      @SuppressWarnings("unchecked")
       List<Map<String,Object>> rows = Arrays.asList(row1, row2, row3);
       table.addRowsFromMaps(rows);
       assertRowCount(3, table);
@@ -632,48 +631,43 @@ public class DatabaseTest extends TestCase
       long curTimeNoMillis = (System.currentTimeMillis() / 1000L);
       curTimeNoMillis *= 1000L;
 
-      DateFormat df = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
-      List<Date> dates =
-        new ArrayList<Date>(
+      List<LocalDateTime> dates =
+        new ArrayList<LocalDateTime>(
             Arrays.asList(
-                df.parse("19801231 00:00:00"),
-                df.parse("19930513 14:43:27"),
+                LocalDateTime.of(1980, 12, 31, 0, 0),
+                LocalDateTime.of(1993, 5, 13, 14, 43, 27),
                 null,
-                df.parse("20210102 02:37:00"),
-                new Date(curTimeNoMillis)));
+                LocalDateTime.of(2021, 1, 2, 2, 37, 0),
+                LocalDateTime.of(1970, 1, 1, 0, 0).plusNanos(curTimeNoMillis * 1000000)
+                ));
 
-      Calendar c = Calendar.getInstance();
       for(int year = 1801; year < 2050; year +=3) {
-        for(int month = 0; month <= 12; ++month) {
+        for(int month = 1; month <= 12; month++) {
           for(int day = 1; day < 29; day += 3) {
-            c.clear();
-            c.set(Calendar.YEAR, year);
-            c.set(Calendar.MONTH, month);
-            c.set(Calendar.DAY_OF_MONTH, day);
-            dates.add(c.getTime());
+            dates.add(LocalDateTime.of(year, month, day, 0, 0));
           }
         }
       }
 
       ((DatabaseImpl)db).getPageChannel().startWrite();
       try {
-        for(Date d : dates) {
+        for(LocalDateTime d : dates) {
           table.addRow("row " + d, d);
         }
       } finally {
         ((DatabaseImpl)db).getPageChannel().finishWrite();
       }
 
-      List<Date> foundDates = new ArrayList<Date>();
+      List<LocalDateTime> foundDates = new ArrayList<LocalDateTime>();
       for(Row row : table) {
-        foundDates.add(row.getDate("date"));
+        foundDates.add((LocalDateTime) row.get("date"));
       }
 
       assertEquals(dates.size(), foundDates.size());
       for(int i = 0; i < dates.size(); ++i) {
-        Date expected = dates.get(i);
-        Date found = foundDates.get(i);
-        assertSameDate(expected, found);
+        LocalDateTime expected = dates.get(i);
+        LocalDateTime found = foundDates.get(i);
+        assertEquals(expected, found);
       }
 
       db.close();
