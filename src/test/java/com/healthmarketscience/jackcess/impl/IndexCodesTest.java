@@ -102,7 +102,7 @@ public class IndexCodesTest extends TestCase {
         }
       }
       if (skipThisRow) {
-        System.out.printf("checkIndexEntries: row skipped - %s%n", row.toString());
+        System.out.println("checkIndexEntries: row skipped - " + row.toString());
       } else {
         Cursor.Position curPos = cursor.getSavepoint().getCurrentPosition();
         boolean success = false;
