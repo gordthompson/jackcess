@@ -58,6 +58,10 @@ import com.healthmarketscience.jackcess.util.TableIterableBuilder;
  */
 public interface Database extends Iterable<Table>, Closeable, Flushable
 {
+  /** identify this as the jackcess8 (Jackcess for Java 8) variant
+   */
+  public static final boolean IS_JACKCESS8 = true;
+  
   /** default value for the auto-sync value ({@code true}).  this is slower,
    *  but leaves more chance of a useable database in the face of failures.
    * @usage _general_field_
