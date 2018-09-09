@@ -1000,7 +1000,7 @@ public class DatabaseTest extends TestCase
 
     while(curCal.getTimeInMillis() < endDate) {
       Date curDate = curCal.getTime();
-      Date newDate = new Date(col.fromDateDouble(col.toDateDouble(curDate)));
+      Date newDate = new Date(ColumnImpl.fromDateDouble(col.toDateDouble(curDate), curCal));
       if(curDate.getTime() != newDate.getTime()) {
         assertEquals(sdf.format(curDate), sdf.format(newDate));
       }
